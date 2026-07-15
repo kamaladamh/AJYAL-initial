@@ -38,7 +38,10 @@
     if (!nav || !navMenu || !navToggle) return;
     nav.classList.remove("is-open");
     navMenu.classList.remove("is-open");
+    document.body.classList.remove("nav-open");
     navToggle.setAttribute("aria-expanded", "false");
+    var label = navToggle.querySelector(".sr-only");
+    if (label) label.textContent = "Open menu";
   }
 
   function setRoute(route) {
@@ -134,13 +137,24 @@
       var open = !navMenu.classList.contains("is-open");
       nav.classList.toggle("is-open", open);
       navMenu.classList.toggle("is-open", open);
+      document.body.classList.toggle("nav-open", open);
       navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      var label = navToggle.querySelector(".sr-only");
+      if (label) label.textContent = open ? "Close menu" : "Open menu";
     });
   }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeMenu();
+  });
 
   document.addEventListener("click", function (event) {
     var anchor = event.target.closest("a[href^='#']");
     if (!anchor) return;
+    if (anchor.getAttribute("href") === "#") {
+      event.preventDefault();
+      return;
+    }
     var route = anchor.getAttribute("data-route");
     if (route) setRoute(route === "solarcheck" ? "SolarCheck" : route);
     closeMenu();
